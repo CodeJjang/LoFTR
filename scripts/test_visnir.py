@@ -45,9 +45,12 @@ def predict_loftr(loftr, img0, img1, topk=1000000):
     # Inference with LoFTR and get prediction
     with torch.no_grad():
         loftr(batch)
-        mkpts0 = batch['mkpts0_f'].cpu().numpy()[:topk]
-        mkpts1 = batch['mkpts1_f'].cpu().numpy()[:topk]
         mconf = batch['mconf'].cpu().numpy()
+        topk_indices = mconf.argsort()[-topk:][::-1]
+
+        mkpts0 = batch['mkpts0_f'].cpu().numpy()[topk_indices]
+        mkpts1 = batch['mkpts1_f'].cpu().numpy()[topk_indices]
+
     return mkpts0, mkpts1
 
 def visualise_keypoints(im1, im2, pts, conf1=None, conf2=None, vis_inliners=True, vis_outliers=True):
